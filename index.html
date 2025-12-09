@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pollo Jose | Pedido</title>
+
+    <link rel="stylesheet" href="estilos.css"> 
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+
+            <div id="items" class="menu row">
+            </div>
+
+            <div class="pedido">
+                <hr>
+                <h2>Pedido</h2>
+
+                <ul id="pedido"></ul>
+                <hr>
+
+                <p class="text-right">Total: <span id="total"></span></p>
+
+                <button id="boton-vaciar" class="btn btn-danger">Vaciar</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="PedidoModelo.js"></script>
+    <script src="PedidoVista.js"></script>
+    <script src="PedidoControlador.js"></script>
+    <script src="App.js"></script>
+</body>
+
+</html>
