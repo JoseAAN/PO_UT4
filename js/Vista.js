@@ -27,7 +27,6 @@ class Vista {
     mostrarLogin(manejadorLogin) {
         if (!this.mainContent) return; 
         
-        // 💥 CORRECCIÓN CRÍTICA: Eliminar cualquier vista de login previa para evitar duplicados.
         this.ocultarLogin(); 
 
         // Inyectamos el formulario de login
@@ -56,13 +55,10 @@ class Vista {
     }
 
     mostrarCatalogo(productos, controladorAgregar) {
-        // Ocultamos la vista de login si existía
         this.ocultarLogin();
         
-        // Mostramos las secciones de productos/carrito
         if (this.catalogoContainer) this.catalogoContainer.style.display = 'flex'; 
 
-        // Repinta los productos en el catálogo
         this.dibujarProductos(productos, controladorAgregar);
     }
 

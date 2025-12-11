@@ -53,13 +53,52 @@ class Modelo {
             
         } catch (error) {
             console.error("ERROR CRÍTICO: Falló la obtención de datos de la API. Usando datos de respaldo.", error);
-            // Usamos datos de respaldo si la solicitud falla
             this.productos = PRODUCTOS_DUMMY_RESPALDO;
             return this.productos;
         }
     }
 
-    // ... (El resto de los métodos del carrito permanecen iguales) ...
+    // =======================================================
+    // --- LÓGICA CRUD DE ADMINISTRACIÓN ---
+    // =======================================================
+
+    crearProducto(nuevoProducto) {
+        // Asignar un nuevo ID temporal (incrementando el último ID conocido)
+        const ultimoId = this.productos.reduce((max, p) => p.id > max ? p.id : max, 0);
+        nuevoProducto.id = ultimoId + 1;
+        
+        // El nuevo producto se añade al principio para que se vea fácilmente en la tabla
+        this.productos.unshift(nuevoProducto); 
+    }
+
+    actualizarProducto(productoActualizado) {
+        const index = this.productos.findIndex(p => p.id === productoActualizado.id);
+        if (index !== -1) {
+            // Reemplazar el producto existente con los nuevos datos
+            const productoOriginal = this.productos[index];
+            
+            this.productos[index] = {
+                ...productoOriginal, 
+                ...productoActualizado
+            };
+        }
+    }
+
+    eliminarProductoAdmin(idProducto) {
+        // Eliminar el producto del catálogo 
+        this.productos = this.productos.filter(p => p.id !== parseInt(idProducto));
+    }
+
+    obtenerProductoPorId(idProducto) {
+        // Obtener los datos de un producto para cargarlos en el formulario de edición
+        return this.productos.find(p => p.id === parseInt(idProducto));
+    }
+
+
+    // =======================================================
+    // --- Lógica de Carrito ---
+    // =======================================================
+
     agregarProducto(idProducto) {
         this.pedido.push(idProducto);
     }

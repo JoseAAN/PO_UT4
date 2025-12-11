@@ -17,7 +17,6 @@ class AdminControlador {
         this.vista = vista;
         this.vista.controlador = this; 
         
-        // Estado local para saber si estamos editando
         this.modoEdicion = false;
         this.idEditando = null;
     }
@@ -40,9 +39,14 @@ class AdminControlador {
         // Dibuja el formulario (vacío inicialmente) y la tabla
         this.vista.dibujarAdminCRUD(
             this.modelo.productos, 
-            this.manejadorGuardar.bind(this), // Handler del formulario
+            this.manejadorGuardar.bind(this), // Handler del formulario (Crear/Actualizar)
             this.manejadorTablaAccion.bind(this) // Handler para botones Editar/Eliminar
         ); 
+        
+        // Asegura que el formulario esté en modo 'Crear' al inicio
+        this.vista.limpiarFormularioAdmin(); 
+        this.modoEdicion = false;
+        this.idEditando = null;
     }
     
     // --- Handlers de Autenticación y Navegación ---
@@ -52,7 +56,7 @@ class AdminControlador {
         if (navProductos) {
             navProductos.addEventListener('click', (e) => {
                  e.preventDefault(); 
-                 this.modelo.cerrarSesion(); // Cierra la sesión
+                 this.modelo.cerrarSesion(); // Cierra la sesión para evitar el bucle de redirección
                  window.location.href = 'index.html';
             });
         }
@@ -85,19 +89,17 @@ class AdminControlador {
     manejadorGuardar(e) {
         e.preventDefault();
         const formulario = e.target;
-        const idProducto = parseInt(formulario.querySelector('#producto-id').value);
         
+        // Obtener datos del formulario
         const datos = {
-            id: idProducto || null,
             title: formulario.querySelector('#producto-title').value,
             price: parseFloat(formulario.querySelector('#producto-price').value),
             stock: parseInt(formulario.querySelector('#producto-stock').value) || 0,
-            // Usamos una imagen de placeholder para los nuevos productos
-            thumbnail: 'placeholder.jpg' 
+            thumbnail: 'https://cdn.dummyjson.com/product-images/placeholder.jpg' 
         };
 
         if (this.modoEdicion) {
-            datos.id = this.idEditando; // Asegurar que el ID es el correcto al editar
+            datos.id = parseInt(this.idEditando);
             this.modelo.actualizarProducto(datos);
         } else {
             this.modelo.crearProducto(datos);
@@ -107,6 +109,7 @@ class AdminControlador {
         this.vista.limpiarFormularioAdmin();
         this.iniciarCRUD(); // Redibuja la tabla con los nuevos datos
         this.modoEdicion = false;
+        this.idEditando = null;
     }
 
     manejadorEliminarAdmin(idProducto) {
@@ -121,7 +124,7 @@ class AdminControlador {
         if (producto) {
             this.vista.cargarFormularioAdmin(producto);
             this.modoEdicion = true;
-            this.idEditando = idProducto;
+            this.idEditando = idProducto; // Almacenamos el ID que estamos editando
         }
     }
 }
