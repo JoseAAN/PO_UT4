@@ -1,24 +1,77 @@
-// Controlador.js
+// js/controlador.js
 
 class Controlador {
     constructor(modelo, vista) {
         this.modelo = modelo;
         this.vista = vista;
+        this.vista.controlador = this; 
+        
+        this.vista.asociarNavHandlers(this.controladorNav.bind(this));
     }
+
+    // --- Ruteo y Vistas (Ejecutado en index.html) ---
 
     verificarSesion() {
-        this.vista.dibujarProductos(this.modelo.productos, this.controladorAgregar.bind(this));
+        // 1. Siempre muestra el catálogo por defecto
+        this.vista.mostrarCatalogo(
+            this.modelo.productos, 
+            this.controladorAgregar.bind(this)
+        );
         
-        // Asociamos el listener de 'Vaciar' una vez al inicio.
-        this.vista.asociarControladorVaciar(this.controladorVaciar.bind(this)); 
+        // 2. Si hay sesión, simplemente ocultamos cualquier remanente del Login.
+        this.vista.ocultarLogin();
         
+        // 3. Inicialización de elementos de carrito
         this.actualizarPedidoVista(); 
+        this.vista.asociarControladorVaciar(this.controladorVaciar.bind(this));
     }
 
+
+    // --- Manejador de Navegación ---
+
+    controladorNav(e) {
+        e.preventDefault();
+        const id = e.target.id;
+
+        if (id === 'nav-panel') {
+            if (this.modelo.usuarioLogeado) {
+                // Va directo al panel si está logueado
+                window.location.href = 'admin.html';
+            } else {
+                // 💥 CORRECCIÓN CRÍTICA: Mostrar formulario de Login y ocultar el catálogo
+                this.vista.mostrarLogin(this.manejadorLogin.bind(this));
+                this.vista.ocultarCatalogo();
+            }
+        } else if (id === 'nav-productos') {
+            // Volver al catálogo, ocultando el formulario de login si estaba visible
+            this.vista.mostrarCatalogo(
+                this.modelo.productos, 
+                this.controladorAgregar.bind(this)
+            );
+            this.vista.ocultarLogin();
+        }
+    }
+
+    // --- Manejadores de Autenticación (Login) ---
+
+    manejadorLogin(e) {
+        e.preventDefault();
+        const usuario = document.getElementById('admin-user-input').value;
+        const clave = document.getElementById('admin-pass-input').value;
+        const errorMsg = document.getElementById('login-error');
+
+        if (this.modelo.intentarLogin(usuario, clave)) {
+            errorMsg.textContent = '';
+            window.location.href = 'admin.html'; 
+        } else {
+            errorMsg.textContent = 'Usuario o contraseña incorrectos.';
+        }
+    }
+
+    // --- Manejadores de Carrito (CRUD del Pedido) ---
 
     controladorAgregar(evento) {
         const idProducto = parseInt(evento.target.getAttribute('data-id')); 
-        
         if (typeof this.modelo.agregarProducto === 'function') {
             this.modelo.agregarProducto(idProducto);
             this.actualizarPedidoVista();
@@ -27,12 +80,9 @@ class Controlador {
         }
     }
     
-    // NUEVO MANEJADOR: Botón '+' en el carrito
     controladorIncrementar(evento) {
         const idProducto = parseInt(evento.target.getAttribute('data-id')); 
-        
         if (typeof this.modelo.agregarProducto === 'function') {
-            // Reutilizamos agregarProducto, ya que incrementar es lo mismo que añadir
             this.modelo.agregarProducto(idProducto); 
             this.actualizarPedidoVista();
         } else {
@@ -40,7 +90,6 @@ class Controlador {
         }
     }
 
-    // MANEJADOR: Botón '-' en el carrito
     controladorEliminar(evento) {
         const idProducto = parseInt(evento.target.getAttribute('data-id'));
         if (typeof this.modelo.eliminarProducto === 'function') {
@@ -51,10 +100,8 @@ class Controlador {
         }
     }
     
-    // NUEVO MANEJADOR: Botón 'X' en el carrito
     controladorEliminarTodas(evento) {
         const idProducto = parseInt(evento.target.getAttribute('data-id'));
-        
         if (typeof this.modelo.eliminarTodasUnidades === 'function') {
             this.modelo.eliminarTodasUnidades(idProducto);
             this.actualizarPedidoVista();
@@ -77,17 +124,16 @@ class Controlador {
             const pedidoDetallado = this.modelo.obtenerPedidoContado();
             const total = this.modelo.calcularTotal();
 
-            // ⚠️ CORRECCIÓN CLAVE: Pasar los cuatro handlers a dibujarPedido
             this.vista.dibujarPedido(
                 pedidoDetallado, 
-                this.controladorEliminar.bind(this), // (-) Eliminar una unidad
-                this.controladorIncrementar.bind(this), // (+) Añadir una unidad
-                this.controladorEliminarTodas.bind(this) // (X) Eliminar TODAS
+                this.controladorEliminar.bind(this),
+                this.controladorIncrementar.bind(this),
+                this.controladorEliminarTodas.bind(this)
             );
             
             this.vista.actualizarTotal(total);
         } else {
-             console.warn("Métodos de pedido (obtenerPedidoContado o calcularTotal) no definidos en el Modelo. No se puede actualizar el pedido.");
+             console.warn("Métodos de pedido no definidos en el Modelo. No se puede actualizar el pedido.");
         }
     }
 }

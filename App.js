@@ -5,14 +5,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     const modelo = new Modelo();
     const vista = new Vista();
 
-    // 2. Esperamos a que el Modelo cargue los productos de la API.
-    // ESTE PASO AHORA ES ASÍNCRONO Y NECESITA ESPERAR.
-    await modelo.cargarProductos(); 
+    try {
+        // 2. Esperamos la carga de productos de la API.
+        await modelo.cargarProductos(); 
+        
+        // 3. Instanciamos y arrancamos el Controlador SOLO si la carga fue exitosa.
+        const controlador = new Controlador(modelo, vista);
+        controlador.verificarSesion(); 
 
-    // 3. Instanciamos y arrancamos el Controlador.
-    // Se garantiza que modelo.productos ya está lleno.
-    const controlador = new Controlador(modelo, vista);
-    
-    // Inicia el ruteo de la aplicación (Login o CRUD)
-    controlador.verificarSesion(); 
+    } catch (error) {
+        console.error("Error FATAL al inicializar la aplicación. La carga de productos falló:", error);
+        // Podrías mostrar un mensaje de error en la UI aquí si lo deseas
+    }
 });

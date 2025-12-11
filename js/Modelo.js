@@ -5,11 +5,8 @@
 
 class Modelo {
     constructor() {
-        // Estado del Catálogo y Pedido
         this.productos = []; 
-        this.pedido = []; // ARRAY que almacena los IDs de los productos en el carrito.
-        
-        // Estado de Sesión
+        this.pedido = []; 
         this.usuarioLogeado = this._obtenerEstadoSesion();
     }
 
@@ -20,7 +17,6 @@ class Modelo {
     // --- Lógica de Autenticación (Login) ---
 
     intentarLogin(usuario, clave) {
-        // Usamos la constante global de usuarios definida en datosDummy.js
         if (USUARIOS_DUMMY[usuario] === clave) {
             this.usuarioLogeado = usuario;
             sessionStorage.setItem('usuarioLogeado', usuario);
@@ -38,7 +34,7 @@ class Modelo {
 
     async cargarProductos() {
         try {
-            console.log("Cargando productos desde dummyjson.com...");
+            console.log("DEBUG: Iniciando carga de productos desde dummyjson.com...");
             const URL_API = 'https://dummyjson.com/products';
 
             const respuesta = await fetch(URL_API);
@@ -51,68 +47,48 @@ class Modelo {
 
             this.productos = datos.products;
             
-            console.log(`Productos cargados: ${this.productos.length}`);
+            console.log(`DEBUG: Productos cargados con éxito. Total: ${this.productos.length}`);
             
             return this.productos; 
             
         } catch (error) {
-            console.error("Error al obtener los productos de la API. Usando datos de respaldo.", error);
+            console.error("ERROR CRÍTICO: Falló la obtención de datos de la API. Usando datos de respaldo.", error);
+            // Usamos datos de respaldo si la solicitud falla
             this.productos = PRODUCTOS_DUMMY_RESPALDO;
             return this.productos;
         }
     }
 
-    // =======================================================
-    // --- Lógica de Carrito (CRUD del Pedido) ---
-    // =======================================================
-
+    // ... (El resto de los métodos del carrito permanecen iguales) ...
     agregarProducto(idProducto) {
-        // Incrementa la cantidad (usado por el botón 'Añadir' y el botón '+')
         this.pedido.push(idProducto);
-        console.log(`Producto ID ${idProducto} añadido al carrito.`);
     }
-
     vaciarPedido() {
         this.pedido = [];
     }
-
-    // Método para ELIMINAR UNA UNIDAD (usado por el botón '-')
     eliminarProducto(idProducto) {
-        // Usamos findIndex para encontrar el primer índice del producto con ese ID
         const index = this.pedido.findIndex(id => id === idProducto);
-        
         if (index !== -1) {
-            // Elimina SÓLO una unidad de ese producto
             this.pedido.splice(index, 1);
         }
     }
-    
-    // NUEVO MÉTODO: Quita todas las unidades de un producto (usado por el botón 'X')
     eliminarTodasUnidades(idProducto) {
-        // Filtra el array 'pedido', manteniendo solo los IDs que NO coincidan con idProducto
         this.pedido = this.pedido.filter(id => id !== idProducto);
     }
-
-
     calcularTotal() {
         let total = 0;
-
         this.pedido.forEach(idPedido => {
             const producto = this.productos.find(p => p.id === idPedido);
             if (producto) {
                 total += producto.price;
             }
         });
-
         return total.toFixed(2); 
     }
-
     obtenerPedidoContado() {
         const pedidoDetallado = [];
-
         this.pedido.forEach(idPedido => {
             const productoContado = pedidoDetallado.find(item => item.id === idPedido);
-
             if (productoContado) {
                 productoContado.cantidad++;
             } else {
@@ -123,12 +99,11 @@ class Modelo {
                         nombre: productoBase.title, 
                         precio: productoBase.price, 
                         cantidad: 1,
-                        imagenUrl: productoBase.thumbnail // <-- INCLUIDA LA IMAGEN PARA LA VISTA
+                        imagenUrl: productoBase.thumbnail 
                     });
                 }
             }
         });
-
         return pedidoDetallado;
     }
 }

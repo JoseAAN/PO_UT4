@@ -1,14 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel de control</title>
-
+    <title>Panel de Administración</title>
     <link rel="stylesheet" href="estilos.css">
+    <style>
+        /* CSS específico para la tabla CRUD */
+        #crud-content table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        #crud-content th, #crud-content td { border: 1px solid #ccc; padding: 10px; text-align: left; }
+    </style>
 </head>
-
 <body>
     <header>
         <nav class="main-nav">
@@ -20,20 +22,20 @@
         </nav>
     </header>
 
-    <div class="container">
-        <div class="row">
-            <h1>Hola mundo</h1>
-   
-
+    <div class="container" style="margin-top: 50px;">
+        <div id="admin-view">
+            <h2 style="margin-bottom: 20px;">Gestión de Productos (CRUD)</h2>
+            <div id="user-info"></div>
             
+            <div id="crud-content">
+                </div>
         </div>
     </div>
 
     <script src="js/datosdummy.js"></script>
     <script src="js/modelo.js"></script>
     <script src="js/vista.js"></script>
-    <script src="js/controlador.js"></script>
-    <script src="App.js"></script>
+    
+    <script src="js/AdminControlador.js"></script> 
 </body>
-
 </html>
