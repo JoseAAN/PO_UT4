@@ -1,5 +1,3 @@
-// js/AdminControlador.js 
-
 document.addEventListener('DOMContentLoaded', async () => {
     const modelo = new Modelo();
     const vista = new Vista();
@@ -16,7 +14,6 @@ class AdminControlador {
         this.modelo = modelo;
         this.vista = vista;
         this.vista.controlador = this; 
-        
         this.modoEdicion = false;
         this.idEditando = null;
     }

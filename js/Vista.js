@@ -1,72 +1,86 @@
-// js/vista.js
-
 class Vista {
     constructor() {
-        // Elementos del DOM (Selección robusta para index.html y admin.html)
         this.vistaProductos = document.querySelector('#items');
-        this.vistaPedido = document.querySelector('#pedido');
+        this.vistaCarrito = document.querySelector('#carrito');
         this.vistaPrecioTotal = document.querySelector('#total');
         this.vistaVaciar = document.querySelector('#boton-vaciar');
         
-        // Elementos para el ruteo
-        this.mainContent = document.querySelector('.container'); 
+        this.contenidoPrincipal = document.querySelector('.container'); 
         this.navPanel = document.querySelector('#nav-panel');
         this.navProductos = document.querySelector('#nav-productos');
-        this.catalogoContainer = document.querySelector('.row'); // Contenedor del menú/carrito
-        
+        this.catalogoContenedor = document.querySelector('.row'); 
         this.controlador = null; 
     }
-
-    // --- Métodos de Ruteo y Layout (Para index.html) ---
     
-    asociarNavHandlers(controladorNav) {
-        if (this.navPanel) this.navPanel.addEventListener('click', controladorNav);
-        if (this.navProductos) this.navProductos.addEventListener('click', controladorNav);
+    asociarNav(controladorNav) {
+        this.navPanel.addEventListener('click', controladorNav);
+        this.navProductos.addEventListener('click', controladorNav);
     }
 
     mostrarLogin(manejadorLogin) {
-        if (!this.mainContent) return; 
-        
         this.ocultarLogin(); 
 
-        // Inyectamos el formulario de login
-        this.mainContent.insertAdjacentHTML('afterbegin', `
-            <div id="login-view" style="max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background: #fff;">
-                <h2>Acceso de Administración</h2>
-                <form id="login-form" style="display: flex; flex-direction: column;">
-                    <input type="text" id="admin-user-input" placeholder="Usuario" value="admin" required class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                    <input type="password" id="admin-pass-input" placeholder="Contraseña" value="1234" required class="form-control" style="width: 100%; padding: 8px; margin-bottom: 10px;">
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">Iniciar Sesión</button>
-                    <p id="login-error" style="color:red; text-align:center; margin-top: 10px;"></p>
-                </form>
-            </div>
-        `);
+        //formulario de Login
+        const loginView = document.createElement('div');
+        loginView.id = 'login-view';
+        loginView.style.cssText = 'max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background: #fff;';
         
-        document.getElementById('login-form').addEventListener('submit', manejadorLogin);
+        const titleH2 = document.createElement('h2');
+        titleH2.textContent = 'Acceso de Administración';
+        loginView.appendChild(titleH2);
+        
+        const form = document.createElement('form');
+        form.id = 'login-form';
+        form.style.cssText = 'display: flex; flex-direction: column;';
+        
+        const inputUser = document.createElement('input');
+        inputUser.type = 'text'; inputUser.id = 'admin-user-input'; inputUser.placeholder = 'Usuario'; 
+        inputUser.value = 'admin'; inputUser.required = true; 
+        inputUser.classList.add('form-control');
+        inputUser.style.cssText = 'width: 100%; padding: 8px; margin-bottom: 10px;';
+        form.appendChild(inputUser);
+
+        const inputPass = document.createElement('input');
+        inputPass.type = 'password'; inputPass.id = 'admin-pass-input'; inputPass.placeholder = 'Contraseña'; 
+        inputPass.value = '1234'; inputPass.required = true; 
+        inputPass.classList.add('form-control');
+        inputPass.style.cssText = 'width: 100%; padding: 8px; margin-bottom: 10px;';
+        form.appendChild(inputPass);
+        
+        const btnSubmit = document.createElement('button');
+        btnSubmit.type = 'submit'; btnSubmit.classList.add('btn', 'btn-primary');
+        btnSubmit.textContent = 'Iniciar Sesión'; btnSubmit.style.width = '100%';
+        form.appendChild(btnSubmit);
+        
+        const errorMsg = document.createElement('p');
+        errorMsg.id = 'login-error';
+        errorMsg.style.cssText = 'color:red; text-align:center; margin-top: 10px;';
+        form.appendChild(errorMsg);
+
+        loginView.appendChild(form);
+        this.contenidoPrincipal.insertAdjacentElement('afterbegin', loginView);
+        
+        form.addEventListener('submit', manejadorLogin);
     }
     
     ocultarLogin() {
         const loginView = document.getElementById('login-view');
-        if(loginView) loginView.remove();
+        if(loginView) loginView.remove(); 
     }
     
     ocultarCatalogo() {
-        if(this.catalogoContainer) this.catalogoContainer.style.display = 'none';
+        this.catalogoContenedor.style.display = 'none';
     }
 
     mostrarCatalogo(productos, controladorAgregar) {
         this.ocultarLogin();
-        
-        if (this.catalogoContainer) this.catalogoContainer.style.display = 'flex'; 
-
+        this.catalogoContenedor.style.display = 'flex'; 
         this.dibujarProductos(productos, controladorAgregar);
     }
 
-    // --- Métodos de Dibujo del Catálogo ---
+    //Catálogo
 
     dibujarProductos(productos, controladorAgregar) {
-        if (!this.vistaProductos || !productos) return;
-        
         this.vistaProductos.innerHTML = ''; 
 
         productos.forEach(info => {
@@ -99,34 +113,28 @@ class Vista {
         });
     }
 
-    // --- Métodos de Dibujo del Carrito ---
+    //Carrito
 
-    dibujarPedido(pedidoDetallado, controladorEliminar, controladorIncrementar, controladorEliminarTodas) {
-        if (!this.vistaPedido) return;
-        this.vistaPedido.textContent = ''; 
+    dibujarCarrito(carritoDetallado, controladorEliminar, controladorIncrementar, controladorEliminarTodas) {
+        this.vistaCarrito.textContent = ''; 
         
-        pedidoDetallado.forEach(item => {
+        carritoDetallado.forEach(item => {
             const articulo = document.createElement('li');
             articulo.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
 
             const imagenMiniatura = document.createElement('img');
             imagenMiniatura.src = item.imagenUrl || 'placeholder.jpg';
-            imagenMiniatura.style.width = '30px'; 
-            imagenMiniatura.style.height = '30px';
-            imagenMiniatura.style.objectFit = 'cover';
-            imagenMiniatura.style.marginRight = '10px';
-            imagenMiniatura.style.borderRadius = '5px';
+            imagenMiniatura.style.cssText = 'width: 30px; height: 30px; object-fit: cover; margin-right: 10px; border-radius: 5px;';
             articulo.appendChild(imagenMiniatura);
             
-            const precioPedido = (item.precio * item.cantidad).toFixed(2);
+            const precioCarrito = (item.precio * item.cantidad).toFixed(2);
             const infoSpan = document.createElement('span');
-            infoSpan.textContent = `${item.cantidad} x ${item.nombre} - ${precioPedido}€`;
+            infoSpan.textContent = `${item.cantidad} x ${item.nombre} - ${precioCarrito}€`;
             infoSpan.style.flexGrow = '1'; 
             articulo.appendChild(infoSpan);
             
             const botonesDiv = document.createElement('div');
-            botonesDiv.style.display = 'flex';
-            botonesDiv.style.gap = '5px'; 
+            botonesDiv.style.cssText = 'display: flex; gap: 5px;'; 
 
             const botonIncrementar = document.createElement('button');
             botonIncrementar.classList.add('btn', 'btn-success', 'btn-sm');
@@ -146,85 +154,155 @@ class Vista {
             botonEliminarTodas.setAttribute('data-id', item.id);
             botonEliminarTodas.addEventListener('click', controladorEliminarTodas);
 
-
             botonesDiv.appendChild(botonIncrementar);
             botonesDiv.appendChild(botonEliminar);
             botonesDiv.appendChild(botonEliminarTodas);
 
             articulo.appendChild(botonesDiv);
 
-            this.vistaPedido.appendChild(articulo);
+            this.vistaCarrito.appendChild(articulo);
         });
     }
 
     actualizarTotal(total) {
-        if (!this.vistaPrecioTotal) return;
         this.vistaPrecioTotal.textContent = total + '€';
     }
 
     asociarControladorVaciar(controladorVaciar) {
-        if (this.vistaVaciar) this.vistaVaciar.addEventListener('click', controladorVaciar);
+        this.vistaVaciar.addEventListener('click', controladorVaciar);
     }
     
-    // --- Métodos de CRUD Admin (Para admin.html) ---
+    //CRUD
 
     dibujarAdminCRUD(productos, manejadorGuardar, manejadorTablaAccion) {
         const crudContent = document.getElementById('crud-content');
-        if (!crudContent || !productos) return; 
 
-        // 1. Dibuja el formulario de Agregar/Editar
-        crudContent.innerHTML = `
-            <h3>Crear/Editar Producto</h3>
-            <form id="crud-form" style="margin-bottom: 30px; border: 1px solid #ccc; padding: 15px;">
-                <input type="hidden" id="producto-id" value="">
-                
-                <label for="producto-title">Título:</label>
-                <input type="text" id="producto-title" required style="width: 100%; margin-bottom: 10px; padding: 5px;"><br>
-                
-                <label for="producto-price">Precio:</label>
-                <input type="number" id="producto-price" required step="0.01" style="width: 100%; margin-bottom: 10px; padding: 5px;"><br>
-                
-                <label for="producto-stock">Stock:</label>
-                <input type="number" id="producto-stock" required style="width: 100%; margin-bottom: 10px; padding: 5px;"><br>
-                
-                <button type="submit" class="btn btn-primary" id="btn-guardar">Crear</button>
-                <button type="reset" class="btn btn-warning" id="btn-cancelar">Cancelar</button>
-            </form>
-            <h4>Listado de Productos</h4>
-        `;
-        
-        // 2. Asociar handler al formulario
-        document.getElementById('crud-form').addEventListener('submit', manejadorGuardar);
-        document.getElementById('btn-cancelar').addEventListener('click', () => this.limpiarFormularioAdmin());
+        crudContent.innerHTML = ''; 
+        const titleH3 = document.createElement('h3');
+        titleH3.textContent = 'Crear/Editar Producto';
+        crudContent.appendChild(titleH3);
 
-        // 3. Dibuja la tabla
-        let tablaHTML = '<table><thead><tr><th>ID</th><th>Título</th><th>Precio</th><th>Stock</th><th>Acciones</th></tr></thead><tbody>';
+        const form = document.createElement('form');
+        form.id = 'crud-form';
+        form.style.cssText = 'margin-bottom: 30px; border: 1px solid #ccc; padding: 15px;';
         
-        productos.forEach(p => {
-            tablaHTML += `
-                <tr>
-                    <td>${p.id}</td>
-                    <td>${p.title || 'N/A'}</td>
-                    <td>${p.price ? p.price.toFixed(2) + '€' : 'N/A'}</td>
-                    <td>${p.stock !== undefined ? p.stock : 'N/A'}</td>
-                    <td data-id="${p.id}">
-                        <button class="btn btn-warning btn-sm" data-id="${p.id}">Editar</button>
-                        <button class="btn btn-danger btn-sm" data-id="${p.id}">Eliminar</button>
-                    </td>
-                </tr>
-            `;
+        const inputId = document.createElement('input');
+        inputId.type = 'hidden'; inputId.id = 'producto-id'; inputId.value = '';
+        form.appendChild(inputId);
+
+        form.appendChild(this._createLabelAndInput('Título:', 'producto-title', 'text', true));
+        form.appendChild(this._createLabelAndInput('Precio:', 'producto-price', 'number', true, '0.01'));
+        form.appendChild(this._createLabelAndInput('Stock:', 'producto-stock', 'number', true));
+
+        const btnGuardar = document.createElement('button');
+        btnGuardar.type = 'submit'; btnGuardar.classList.add('btn', 'btn-primary');
+        btnGuardar.id = 'btn-guardar'; btnGuardar.textContent = 'Crear';
+        form.appendChild(btnGuardar);
+
+        const btnCancelar = document.createElement('button');
+        btnCancelar.type = 'reset'; btnCancelar.classList.add('btn', 'btn-warning');
+        btnCancelar.id = 'btn-cancelar'; btnCancelar.textContent = 'Cancelar';
+        form.appendChild(btnCancelar);
+
+        crudContent.appendChild(form);
+        
+        const listTitleH4 = document.createElement('h4');
+        listTitleH4.textContent = 'Listado de Productos';
+        crudContent.appendChild(listTitleH4);
+        
+        const tabla = document.createElement('table');
+        const thead = document.createElement('thead');
+        const tbody = document.createElement('tbody');
+        
+        // Cabecera tabla
+        const trHeader = document.createElement('tr');
+        ['ID', 'Título', 'Precio', 'Stock', 'Acciones'].forEach(text => {
+            const th = document.createElement('th');
+            th.textContent = text;
+            trHeader.appendChild(th);
         });
+        thead.appendChild(trHeader);
+        tabla.appendChild(thead);
+
+        // Filas tabla
+        productos.forEach(p => {
+            tbody.appendChild(this._dibujarFilaTabla(p));
+        });
+        tabla.appendChild(tbody);
         
-        tablaHTML += '</tbody></table>';
-        crudContent.insertAdjacentHTML('beforeend', tablaHTML);
+        crudContent.appendChild(tabla);
         
-        // 4. Asociar handler a la tabla para Editar/Eliminar
-        const tabla = crudContent.querySelector('table');
-        if (tabla) {
-             tabla.addEventListener('click', manejadorTablaAccion);
-        }
+        // 5. Asociar Handlers
+        form.addEventListener('submit', manejadorGuardar);
+        btnCancelar.addEventListener('click', () => this.limpiarFormularioAdmin());
+
+        tabla.addEventListener('click', manejadorTablaAccion);
+    }
+
+    /**
+     * Auxiliar para dibujar cada fila de la tabla CRUD.
+     */
+    _dibujarFilaTabla(producto) {
+        const tr = document.createElement('tr');
+
+        // Función auxiliar para crear y añadir una celda <td>
+        const crearCelda = (textContent, isDataCell = true) => {
+            const td = document.createElement(isDataCell ? 'td' : 'th');
+            td.textContent = textContent;
+            tr.appendChild(td);
+        };
+
+        crearCelda(producto.id);
+        crearCelda(producto.title || 'N/A');
+        crearCelda(producto.price ? producto.price.toFixed(2) + '€' : 'N/A');
+        crearCelda(producto.stock !== undefined ? producto.stock : 'N/A');
+
+        // Celda de Acciones (Botones)
+        const tdAcciones = document.createElement('td');
+        tdAcciones.setAttribute('data-id', producto.id);
+        
+        // Botón Editar
+        const btnEditar = document.createElement('button');
+        btnEditar.classList.add('btn', 'btn-warning', 'btn-sm');
+        btnEditar.textContent = 'Editar';
+        btnEditar.setAttribute('data-id', producto.id);
+        tdAcciones.appendChild(btnEditar);
+        
+        // Botón Eliminar
+        const btnEliminar = document.createElement('button');
+        btnEliminar.classList.add('btn', 'btn-danger', 'btn-sm');
+        btnEliminar.textContent = 'Eliminar';
+        btnEliminar.setAttribute('data-id', producto.id);
+        tdAcciones.appendChild(btnEliminar);
+        
+        tr.appendChild(tdAcciones);
+
+        return tr;
     }
     
+    // --- Método auxiliar para construir Label e Input (Permanece igual) ---
+    _createLabelAndInput(labelText, inputId, inputType, required, step) {
+        const container = document.createElement('div');
+        
+        const label = document.createElement('label');
+        label.htmlFor = inputId;
+        label.textContent = labelText;
+        container.appendChild(label);
+        
+        const input = document.createElement('input');
+        input.type = inputType;
+        input.id = inputId;
+        input.required = required;
+        input.style.cssText = 'width: 100%; margin-bottom: 10px; padding: 5px;';
+        if (step) input.step = step;
+        container.appendChild(input);
+        
+        container.appendChild(document.createElement('br'));
+        return container;
+    }
+
+    // --- Métodos de Formulario CRUD (Limpiar/Cargar) ---
+
     limpiarFormularioAdmin() {
         document.getElementById('crud-form').reset();
         document.getElementById('btn-guardar').textContent = 'Crear';

@@ -1,12 +1,9 @@
-/* estilos.css */
-
 /* --- CONFIGURACIÓN PARA SCROLL --- */
 html, body {
     height: 100%; 
     padding-top: 70px; 
     margin: 0; 
 }
-/* ------------------------------------------------ */
 
 /* --- NAVEGACIÓN --- */
 
@@ -72,51 +69,36 @@ body {
 }
 
 
-/* ---------------------------------------------------- */
-/* --- SOLUCIÓN: POSITION: FIXED del carrito --- */
-/* ---------------------------------------------------- */
 
-.pedido-contenedor {
+.carrito-contenedor {
     width: 300px; 
     padding: 0 15px;
     position: fixed; 
-    
-    /* Separación del nav */
     top: 90px; 
-    
     z-index: 10; 
     left: calc(50% + 600px - 300px); 
 }
 
-.pedido {
+.carrito {
     background-color: #fff;
     border: 1px solid #dee2e6;
     border-radius: 0.25rem;
     padding: 15px;
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); 
     width: 100%; 
-    
-    /* 💥 CORRECCIÓN: Para que la lista del pedido no se salga */
-    display: flex; /* Usamos flex para que el total se quede abajo */
+    display: flex; 
     flex-direction: column;
-    max-height: calc(100vh - 150px); /* Límite de altura: 100% de la ventana menos el header y el margen */
+    max-height: calc(100vh - 150px); 
 }
 
-/* 💥 CORRECCIÓN: Aplicar el scroll a la lista de ítems del pedido */
-#pedido {
+#carrito {
     padding-left: 0;
     list-style: none;
-    
-    /* Estilos clave para el scroll */
-    max-height: 35vh; /* Altura máxima razonable para la lista (ejemplo: 35% del viewport) */
-    overflow-y: auto; /* Aplica scroll vertical si el contenido excede la altura */
-    margin-bottom: 10px; /* Separación de la línea divisoria inferior */
+    max-height: 35vh; 
+    overflow-y: auto; 
+    margin-bottom: 10px; 
 }
 
-
-/* ---------------------------------------------------- */
-/* --- BOTONES DE CONTROL EN CARRITO --- */
-/* ---------------------------------------------------- */
 
 .list-group-item .btn { 
     margin: 0; 
@@ -134,8 +116,6 @@ body {
     font-size: 1rem;
 }
 
-
-/* --- El resto del CSS permanece igual --- */
 
 .card {
     border: 1px solid #dee2e6;
@@ -182,7 +162,7 @@ body {
 .btn-danger {
     background-color: #dc3545;
     border-color: #dc3545;
-    width: 100%; /* Botón vaciar */
+    width: 100%; 
     margin-top: 15px;
 }
 
