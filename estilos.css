@@ -69,6 +69,39 @@ body {
 }
 
 
+/* ---------------------------------------------------- */
+/* --- ESTILOS LOGIN (NUEVOS) --- */
+/* ---------------------------------------------------- */
+.login-panel {
+    max-width: 400px; 
+    margin: 50px auto; 
+    padding: 20px; 
+    border: 1px solid #ccc; 
+    border-radius: 5px; 
+    background: #fff;
+}
+
+.login-form-content {
+    display: flex; 
+    flex-direction: column;
+}
+
+.login-input {
+    width: 100%; 
+    padding: 8px; 
+    margin-bottom: 10px;
+}
+
+.login-error-msg {
+    color:red; 
+    text-align:center; 
+    margin-top: 10px;
+}
+
+
+/* ---------------------------------------------------- */
+/* --- ESTILOS CARRITO (MINIATURA y Botones) --- */
+/* ---------------------------------------------------- */
 
 .carrito-contenedor {
     width: 300px; 
@@ -99,6 +132,51 @@ body {
     margin-bottom: 10px; 
 }
 
+.carrito-miniatura {
+    width: 30px; 
+    height: 30px; 
+    object-fit: cover; 
+    margin-right: 10px; 
+    border-radius: 5px;
+}
+
+.carrito-botones-grupo {
+    display: flex; 
+    gap: 5px;
+}
+
+/* ---------------------------------------------------- */
+/* --- ESTILOS CRUD ADMIN (NUEVOS) --- */
+/* ---------------------------------------------------- */
+
+.crud-form-panel {
+    margin-bottom: 30px; 
+    border: 1px solid #ccc; 
+    padding: 15px;
+}
+
+.crud-input {
+    width: 100%; 
+    margin-bottom: 10px; 
+    padding: 5px;
+    box-sizing: border-box; /* Asegura que el padding no exceda el 100% de width */
+}
+
+/* Estilos de la tabla (existían en admin.html, ahora aquí) */
+#crud-content table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    margin-top: 20px; 
+}
+#crud-content th, #crud-content td { 
+    border: 1px solid #ccc; 
+    padding: 10px; 
+    text-align: left; 
+}
+
+/* ---------------------------------------------------- */
+/* --- Estilos de Componentes Genéricos (restantes) --- */
+/* ---------------------------------------------------- */
 
 .list-group-item .btn { 
     margin: 0; 

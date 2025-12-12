@@ -20,52 +20,50 @@ class Vista {
     mostrarLogin(manejadorLogin) {
         this.ocultarLogin(); 
 
-        //formulario de Login
-        const loginView = document.createElement('div');
-        loginView.id = 'login-view';
-        loginView.style.cssText = 'max-width: 400px; margin: 50px auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; background: #fff;';
+        const vistaLogin = document.createElement('div');
+        vistaLogin.id = 'login-view';
+        vistaLogin.classList.add('login-panel'); 
         
-        const titleH2 = document.createElement('h2');
-        titleH2.textContent = 'Acceso de Administración';
-        loginView.appendChild(titleH2);
+        const cabeceraAdmin = document.createElement('h2');
+        cabeceraAdmin.textContent = 'Acceso de Administración';
+        vistaLogin.appendChild(cabeceraAdmin);
         
         const form = document.createElement('form');
         form.id = 'login-form';
-        form.style.cssText = 'display: flex; flex-direction: column;';
+        form.classList.add('login-form-content'); 
         
         const inputUser = document.createElement('input');
         inputUser.type = 'text'; inputUser.id = 'admin-user-input'; inputUser.placeholder = 'Usuario'; 
         inputUser.value = 'admin'; inputUser.required = true; 
-        inputUser.classList.add('form-control');
-        inputUser.style.cssText = 'width: 100%; padding: 8px; margin-bottom: 10px;';
+        inputUser.classList.add('form-control', 'login-input'); 
         form.appendChild(inputUser);
 
         const inputPass = document.createElement('input');
         inputPass.type = 'password'; inputPass.id = 'admin-pass-input'; inputPass.placeholder = 'Contraseña'; 
         inputPass.value = '1234'; inputPass.required = true; 
-        inputPass.classList.add('form-control');
-        inputPass.style.cssText = 'width: 100%; padding: 8px; margin-bottom: 10px;';
+        inputPass.classList.add('form-control', 'login-input');
         form.appendChild(inputPass);
         
         const btnSubmit = document.createElement('button');
         btnSubmit.type = 'submit'; btnSubmit.classList.add('btn', 'btn-primary');
-        btnSubmit.textContent = 'Iniciar Sesión'; btnSubmit.style.width = '100%';
+        btnSubmit.textContent = 'Iniciar Sesión';
+        btnSubmit.style.width = '100%'; 
         form.appendChild(btnSubmit);
         
         const errorMsg = document.createElement('p');
         errorMsg.id = 'login-error';
-        errorMsg.style.cssText = 'color:red; text-align:center; margin-top: 10px;';
+        errorMsg.classList.add('login-error-msg'); 
         form.appendChild(errorMsg);
 
-        loginView.appendChild(form);
-        this.contenidoPrincipal.insertAdjacentElement('afterbegin', loginView);
+        vistaLogin.appendChild(form);
+        this.contenidoPrincipal.insertAdjacentElement('afterbegin', vistaLogin);
         
         form.addEventListener('submit', manejadorLogin);
     }
     
     ocultarLogin() {
-        const loginView = document.getElementById('login-view');
-        if(loginView) loginView.remove(); 
+        const vistaLogin = document.getElementById('login-view');
+        if(vistaLogin) vistaLogin.remove(); 
     }
     
     ocultarCatalogo() {
@@ -124,7 +122,7 @@ class Vista {
 
             const imagenMiniatura = document.createElement('img');
             imagenMiniatura.src = item.imagenUrl || 'placeholder.jpg';
-            imagenMiniatura.style.cssText = 'width: 30px; height: 30px; object-fit: cover; margin-right: 10px; border-radius: 5px;';
+            imagenMiniatura.classList.add('carrito-miniatura'); 
             articulo.appendChild(imagenMiniatura);
             
             const precioCarrito = (item.precio * item.cantidad).toFixed(2);
@@ -134,7 +132,7 @@ class Vista {
             articulo.appendChild(infoSpan);
             
             const botonesDiv = document.createElement('div');
-            botonesDiv.style.cssText = 'display: flex; gap: 5px;'; 
+            botonesDiv.classList.add('carrito-botones-grupo'); 
 
             const botonIncrementar = document.createElement('button');
             botonIncrementar.classList.add('btn', 'btn-success', 'btn-sm');
@@ -175,24 +173,26 @@ class Vista {
     //CRUD
 
     dibujarAdminCRUD(productos, manejadorGuardar, manejadorTablaAccion) {
-        const crudContent = document.getElementById('crud-content');
+        const contenidoCRUD = document.getElementById('crud-content');
 
-        crudContent.innerHTML = ''; 
+        contenidoCRUD.innerHTML = ''; 
+
         const titleH3 = document.createElement('h3');
         titleH3.textContent = 'Crear/Editar Producto';
-        crudContent.appendChild(titleH3);
+        contenidoCRUD.appendChild(titleH3);
 
         const form = document.createElement('form');
         form.id = 'crud-form';
-        form.style.cssText = 'margin-bottom: 30px; border: 1px solid #ccc; padding: 15px;';
+        form.classList.add('crud-form-panel'); 
         
         const inputId = document.createElement('input');
         inputId.type = 'hidden'; inputId.id = 'producto-id'; inputId.value = '';
         form.appendChild(inputId);
 
-        form.appendChild(this._createLabelAndInput('Título:', 'producto-title', 'text', true));
-        form.appendChild(this._createLabelAndInput('Precio:', 'producto-price', 'number', true, '0.01'));
-        form.appendChild(this._createLabelAndInput('Stock:', 'producto-stock', 'number', true));
+        // Inputs
+        form.appendChild(this.createLabelAndInput('Título:', 'producto-title', 'text', true, null, 'crud-input'));
+        form.appendChild(this.createLabelAndInput('Precio:', 'producto-price', 'number', true, '0.01', 'crud-input'));
+        form.appendChild(this.createLabelAndInput('Stock:', 'producto-stock', 'number', true, null, 'crud-input'));
 
         const btnGuardar = document.createElement('button');
         btnGuardar.type = 'submit'; btnGuardar.classList.add('btn', 'btn-primary');
@@ -204,48 +204,40 @@ class Vista {
         btnCancelar.id = 'btn-cancelar'; btnCancelar.textContent = 'Cancelar';
         form.appendChild(btnCancelar);
 
-        crudContent.appendChild(form);
+        contenidoCRUD.appendChild(form);
         
-        const listTitleH4 = document.createElement('h4');
-        listTitleH4.textContent = 'Listado de Productos';
-        crudContent.appendChild(listTitleH4);
+        const tituloListado = document.createElement('h4');
+        tituloListado.textContent = 'Listado de Productos';
+        contenidoCRUD.appendChild(tituloListado);
         
         const tabla = document.createElement('table');
+        tabla.classList.add('crud-table');
         const thead = document.createElement('thead');
         const tbody = document.createElement('tbody');
         
-        // Cabecera tabla
-        const trHeader = document.createElement('tr');
+        const trCabecera = document.createElement('tr');
         ['ID', 'Título', 'Precio', 'Stock', 'Acciones'].forEach(text => {
             const th = document.createElement('th');
             th.textContent = text;
-            trHeader.appendChild(th);
+            trCabecera.appendChild(th);
         });
-        thead.appendChild(trHeader);
+        thead.appendChild(trCabecera);
         tabla.appendChild(thead);
 
-        // Filas tabla
         productos.forEach(p => {
-            tbody.appendChild(this._dibujarFilaTabla(p));
+            tbody.appendChild(this.dibujarFilaTabla(p));
         });
         tabla.appendChild(tbody);
         
-        crudContent.appendChild(tabla);
-        
-        // 5. Asociar Handlers
+        contenidoCRUD.appendChild(tabla);
         form.addEventListener('submit', manejadorGuardar);
         btnCancelar.addEventListener('click', () => this.limpiarFormularioAdmin());
-
         tabla.addEventListener('click', manejadorTablaAccion);
     }
 
-    /**
-     * Auxiliar para dibujar cada fila de la tabla CRUD.
-     */
-    _dibujarFilaTabla(producto) {
+    dibujarFilaTabla(producto) {
         const tr = document.createElement('tr');
 
-        // Función auxiliar para crear y añadir una celda <td>
         const crearCelda = (textContent, isDataCell = true) => {
             const td = document.createElement(isDataCell ? 'td' : 'th');
             td.textContent = textContent;
@@ -257,18 +249,15 @@ class Vista {
         crearCelda(producto.price ? producto.price.toFixed(2) + '€' : 'N/A');
         crearCelda(producto.stock !== undefined ? producto.stock : 'N/A');
 
-        // Celda de Acciones (Botones)
         const tdAcciones = document.createElement('td');
         tdAcciones.setAttribute('data-id', producto.id);
         
-        // Botón Editar
         const btnEditar = document.createElement('button');
         btnEditar.classList.add('btn', 'btn-warning', 'btn-sm');
         btnEditar.textContent = 'Editar';
         btnEditar.setAttribute('data-id', producto.id);
         tdAcciones.appendChild(btnEditar);
         
-        // Botón Eliminar
         const btnEliminar = document.createElement('button');
         btnEliminar.classList.add('btn', 'btn-danger', 'btn-sm');
         btnEliminar.textContent = 'Eliminar';
@@ -280,8 +269,8 @@ class Vista {
         return tr;
     }
     
-    // --- Método auxiliar para construir Label e Input (Permanece igual) ---
-    _createLabelAndInput(labelText, inputId, inputType, required, step) {
+
+    createLabelAndInput(labelText, inputId, inputType, required, step, inputClass) {
         const container = document.createElement('div');
         
         const label = document.createElement('label');
@@ -293,7 +282,7 @@ class Vista {
         input.type = inputType;
         input.id = inputId;
         input.required = required;
-        input.style.cssText = 'width: 100%; margin-bottom: 10px; padding: 5px;';
+        if (inputClass) input.classList.add(inputClass);
         if (step) input.step = step;
         container.appendChild(input);
         
@@ -301,7 +290,7 @@ class Vista {
         return container;
     }
 
-    // --- Métodos de Formulario CRUD (Limpiar/Cargar) ---
+    //Formulario CRUD
 
     limpiarFormularioAdmin() {
         document.getElementById('crud-form').reset();
@@ -309,7 +298,7 @@ class Vista {
         document.getElementById('producto-id').value = '';
     }
 
-    cargarFormularioAdmin(producto) {
+    cargarFormulario(producto) {
         document.getElementById('producto-id').value = producto.id;
         document.getElementById('producto-title').value = producto.title;
         document.getElementById('producto-price').value = producto.price;
